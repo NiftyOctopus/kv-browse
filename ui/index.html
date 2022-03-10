@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <title>KV Browse</title>
+        <script src='https://unpkg.com/alpinejs' defer></script>
+
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+
+            body {
+                display:         flex;
+                justify-content: center;
+                align-items:     center;
+                overflow:        hidden;
+                font-family:    'Courier New', Courier, monospace;
+            }
+
+            div {
+                font-size: 3em;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div>KV Browse</div>
+
+        <div x-data='{ open: false }'>
+            <button @click='open = !open'>Expand</button>
+            <span x-show='open'>Content</span>
+        </div>
+    </body>
+
+    <script>
+
+    </script>
+</html>

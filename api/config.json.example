@@ -1,0 +1,6 @@
+{
+    "endpoint":  "https://api.cloudflare.com/client/v4/",
+    "account":   "abc123",
+    "namespace": "xyz789",
+    "token":     "ABc123deF456"
+}
