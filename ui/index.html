@@ -14,28 +14,72 @@
 
             body {
                 display:         flex;
+                flex-direction:  column;
                 justify-content: center;
                 align-items:     center;
-                overflow:        hidden;
                 font-family:    'Courier New', Courier, monospace;
             }
 
-            div {
-                font-size: 3em;
+            #main {
+                display:         flex;
+                flex-direction:  row;
+                justify-content: center;
+                align-items:     center;
+            }
+
+            #keys {
+                max-height: 300px;
+                overflow-y: auto;
+                padding:    5px;
             }
         </style>
     </head>
 
-    <body>
-        <div>KV Browse</div>
 
-        <div x-data='{ open: false }'>
-            <button @click='open = !open'>Expand</button>
-            <span x-show='open'>Content</span>
+    <body>
+        <h2>KV Browse</h2>
+
+        <div id='main'>
+            <div x-data="{ prefix: '' }">
+                <div>
+                    <input type='text' x-model='prefix' x-on:keyup='handleKeyPress(event, prefix)'>
+                </div>
+                
+                <div id='keys'>
+                    <template x-for='key in $store.results.keys'>
+                        <div x-text='key.name'></div>
+                    </template>
+                </div>
+            </div>
+
+            <div>
+                <div>Value</div>
+            </div>
         </div>
     </body>
 
-    <script>
 
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('results', {
+                keys: [],
+                update(keys) { this.keys = keys }
+            })
+        })
+
+        function handleKeyPress(e, prefix) {
+            if(e.key === 'Enter') {
+                getKeys(prefix)
+            }
+        }
+
+        function getKeys(prefix) {
+            fetch('http://localhost:8000/keys?prefix=' + prefix)
+            .then(res  => res.json())
+            .then(data => {
+                console.log(data)
+                Alpine.store('results').update(data.result)
+            })
+        }
     </script>
 </html>
