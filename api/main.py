@@ -22,6 +22,19 @@ headers = {
     'Authorization': 'Bearer ' + config['token']
 }
 
+urls = {
+    'verify': config['endpoint'] + 'user/tokens/verify',
+    'namespace': ''.join([
+        config['endpoint'],
+        'accounts/' + config['account'],
+        '/storage/kv/namespaces/' + config['namespace']
+    ])
+}
+
+urls['keys']  = urls['namespace'] + '/keys'
+urls['value'] = urls['namespace'] + '/values/'
+
+
 
 
 @app.get('/')
@@ -32,21 +45,22 @@ async def root():
 
 @app.get('/verify')
 async def verify():
-    url = config['endpoint'] + 'user/tokens/verify'
-    req = requests.get(url, headers=headers)
+    req = requests.get(urls['verify'], headers=headers)
     return req.json()
 
 
 
 @app.get('/keys')
 async def keys(prefix):
-    url = [
-        config['endpoint'],
-        'accounts/' + config['account'],
-        '/storage/kv/namespaces/' + config['namespace'],
-        '/keys',
-        '?prefix=' + prefix if prefix else ''
-    ]
-    
-    req = requests.get(''.join(url), headers=headers)
+    url = urls['keys'] + ('?prefix=' + prefix if prefix else '')
+    req = requests.get(url, headers=headers)
+    return req.json()
+
+
+
+@app.get('/value')
+async def value(key):
+    url = urls['value'] + key
+    print(url)
+    req = requests.get(url, headers=headers)
     return req.json()

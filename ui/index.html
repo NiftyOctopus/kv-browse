@@ -15,22 +15,45 @@
             body {
                 display:         flex;
                 flex-direction:  column;
-                justify-content: center;
-                align-items:     center;
-                font-family:    'Courier New', Courier, monospace;
+                align-items:     stretch;
+                justify-content: flex-start;
+                overflow:        hidden;
+                text-align:      center;
+            }
+
+            body, input, button {
+                font-family: 'Courier New', Courier, monospace;
             }
 
             #main {
                 display:         flex;
                 flex-direction:  row;
-                justify-content: center;
-                align-items:     center;
+                align-items:     stretch;
+                justify-content: space-around;
             }
 
-            #keys {
-                max-height: 300px;
-                overflow-y: auto;
-                padding:    5px;
+            #main > div {
+                flex-grow: 1;
+                padding: 0 20px;
+                border: 1px solid blue;
+            }
+
+            #main .input {
+                border: 1px solid black;
+                margin: 10px 0;
+            }
+
+            input {
+                width: 100%;
+                box-sizing: border-box;
+                font-size: 18px;
+            }
+
+            #main .results {
+                text-align: left;
+                /* margin: 10px; */
+                min-height: 50px;
+                border: 1px solid red;
             }
         </style>
     </head>
@@ -41,19 +64,25 @@
 
         <div id='main'>
             <div x-data="{ prefix: '' }">
-                <div>
-                    <input type='text' x-model='prefix' x-on:keyup='handleKeyPress(event, prefix)'>
+                <div class='input'>
+                    <input name='keys' type='text' x-model='prefix' x-on:keyup='handleKeyPress(event, prefix)'>
                 </div>
                 
-                <div id='keys'>
+                <div id='keys' class='results'>
                     <template x-for='key in $store.results.keys'>
                         <div x-text='key.name'></div>
                     </template>
                 </div>
             </div>
 
-            <div>
-                <div>Value</div>
+            <div x-data="{ key: 'my key' }">
+                <div class='input'>
+                    <input name='value' type='text' x-model='key' x-on:keyup='handleKeyPress(event, key)'>
+                </div>
+                
+                <div id='value' class='results'>
+                    <pre x-text="JSON.stringify($store.results.value, null, 2)"></pre>
+                </div>
             </div>
         </div>
     </body>
@@ -62,23 +91,40 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('results', {
-                keys: [],
-                update(keys) { this.keys = keys }
+                keys: [], value: {},
+                updateKeys(keys)   { this.keys  = keys  },
+                updateValue(value) { this.value = value },
+                get(field) { return this.value[field] }
             })
         })
 
-        function handleKeyPress(e, prefix) {
+        function handleKeyPress(e, data) {
             if(e.key === 'Enter') {
-                getKeys(prefix)
+                const name = e.target.name
+                if(name === 'keys')  { getKeys(data)  }
+                if(name === 'value') { getValue(data) }
             }
         }
 
         function getKeys(prefix) {
+            console.log('Getting keys')
+
             fetch('http://localhost:8000/keys?prefix=' + prefix)
             .then(res  => res.json())
             .then(data => {
                 console.log(data)
-                Alpine.store('results').update(data.result)
+                Alpine.store('results').updateKeys(data.result)
+            })
+        }
+
+        function getValue(key) {
+            console.log('Getting value')
+            
+            fetch('http://localhost:8000/value?key=' + key)
+            .then(res  => res.json())
+            .then(data => {
+                console.log(data)
+                Alpine.store('results').updateValue(data)
             })
         }
     </script>
