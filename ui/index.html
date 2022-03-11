@@ -25,6 +25,11 @@
                 font-family: 'Courier New', Courier, monospace;
             }
 
+            #header {
+                font-size: 22px;
+                padding: 20px;
+            }
+
             #main {
                 display:         flex;
                 flex-direction:  row;
@@ -34,38 +39,42 @@
 
             #main > div {
                 flex-grow: 1;
-                padding: 0 20px;
-                border: 1px solid blue;
+                padding:   0 20px;
             }
 
             #main .input {
-                border: 1px solid black;
                 margin: 10px 0;
             }
 
             input {
                 width: 100%;
                 box-sizing: border-box;
+                /* Top Right Bottom Left */
+                padding: 6px 8px 4px 8px;
                 font-size: 18px;
             }
 
             #main .results {
                 text-align: left;
-                /* margin: 10px; */
-                min-height: 50px;
-                border: 1px solid red;
+                padding: 5px;
+                max-height: 70vh;
+                overflow-y: scroll;
+            }
+
+            #keys {
+                font-size: 14px;
             }
         </style>
     </head>
 
 
     <body>
-        <h2>KV Browse</h2>
+        <div id='header'>KV Browse</div>
 
         <div id='main'>
             <div x-data="{ prefix: '' }">
                 <div class='input'>
-                    <input name='keys' type='text' x-model='prefix' x-on:keyup='handleKeyPress(event, prefix)'>
+                    <input name='keys' type='text' x-model='prefix' x-on:keyup='handleKeyPress(event, prefix)' placeholder='key prefix'>
                 </div>
                 
                 <div id='keys' class='results'>
@@ -75,9 +84,9 @@
                 </div>
             </div>
 
-            <div x-data="{ key: 'my key' }">
+            <div x-data="{ key: '' }">
                 <div class='input'>
-                    <input name='value' type='text' x-model='key' x-on:keyup='handleKeyPress(event, key)'>
+                    <input name='value' type='text' x-model='key' x-on:keyup='handleKeyPress(event, key)' placeholder='key'>
                 </div>
                 
                 <div id='value' class='results'>
