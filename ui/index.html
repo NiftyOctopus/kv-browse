@@ -10,6 +10,7 @@
             html, body {
                 height: 100%;
                 margin: 0;
+                background-color: #f9f9f9;
             }
 
             body {
@@ -17,7 +18,6 @@
                 flex-direction:  column;
                 align-items:     stretch;
                 justify-content: flex-start;
-                overflow:        hidden;
                 text-align:      center;
             }
 
@@ -27,7 +27,7 @@
 
             #header {
                 font-size: 22px;
-                padding: 20px;
+                padding:   20px;
             }
 
             #main {
@@ -35,34 +35,60 @@
                 flex-direction:  row;
                 align-items:     stretch;
                 justify-content: space-around;
+                overflow:        auto;
             }
 
-            #main > div {
+            .card {
                 flex-grow: 1;
-                padding:   0 20px;
+                padding:   0 20px 10px 20px;
+                width: 50%;
+                display:         flex;
+                flex-direction:  column;
+                align-items:     stretch;
+                justify-content: flex-start;
             }
 
-            #main .input {
+            .input {
                 margin: 10px 0;
             }
 
             input {
                 width: 100%;
                 box-sizing: border-box;
+                border: 1px solid gray;
+                border-radius: 3px;
                 /* Top Right Bottom Left */
                 padding: 6px 8px 4px 8px;
                 font-size: 18px;
             }
 
-            #main .results {
+            .results {
+                padding:    10px;
+                overflow:   auto;
                 text-align: left;
-                padding: 5px;
-                max-height: 70vh;
-                overflow-y: scroll;
+                border-radius: 3px;
             }
 
             #keys {
                 font-size: 14px;
+                background-color: #d3edf8;
+            }
+
+            #count {
+                font-weight: bold;
+            }
+
+            .key {
+                padding: 3px 0;
+            }
+
+            .key:hover {
+                cursor: pointer;
+                background-color: #cccccc;
+            }
+
+            #value {
+                background-color: #ffdacc;
             }
         </style>
     </head>
@@ -72,21 +98,23 @@
         <div id='header'>KV Browse</div>
 
         <div id='main'>
-            <div x-data="{ prefix: '' }">
+            <div class='card' x-data="{ prefix: '' }">
                 <div class='input'>
                     <input name='keys' type='text' x-model='prefix' x-on:keyup='handleKeyPress(event, prefix)' placeholder='key prefix'>
                 </div>
                 
                 <div id='keys' class='results'>
+                    <div id='count' x-text='$store.results.keys.length'></div>
+
                     <template x-for='key in $store.results.keys'>
-                        <div x-text='key.name'></div>
+                        <div class='key' x-text='key.name' x-on:click='selectKey(key.name)'></div>
                     </template>
                 </div>
             </div>
 
-            <div x-data="{ key: '' }">
+            <div class='card' x-data="{ key: '' }">
                 <div class='input'>
-                    <input name='value' type='text' x-model='key' x-on:keyup='handleKeyPress(event, key)' placeholder='key'>
+                    <input name='value' type='text' x-model='$store.results.key' x-on:keyup='handleKeyPress(event, $store.results.key)' placeholder='key'>
                 </div>
                 
                 <div id='value' class='results'>
@@ -100,7 +128,8 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('results', {
-                keys: [], value: {},
+                key: '', keys: [], value: {},
+                updateKey(key)     { this.key   = key   },
                 updateKeys(keys)   { this.keys  = keys  },
                 updateValue(value) { this.value = value },
                 get(field) { return this.value[field] }
@@ -124,6 +153,11 @@
                 console.log(data)
                 Alpine.store('results').updateKeys(data.result)
             })
+        }
+
+        function selectKey(key) {
+            Alpine.store('results').updateKey(key)
+            getValue(key)
         }
 
         function getValue(key) {
