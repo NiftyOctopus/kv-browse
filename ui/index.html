@@ -55,7 +55,7 @@
             input {
                 width: 100%;
                 box-sizing:    border-box;
-                border:        1px solid gray;
+                border:        1px solid lightgray;
                 border-radius: 3px;
                 
                 /* Top Right Bottom Left */
@@ -89,7 +89,16 @@
 
             .key:hover {
                 cursor: pointer;
-                background-color: #cccccc;
+                background-color: #a7dbf1;
+            }
+
+            .delete {
+                color: #a6a6a6;
+            }
+
+            .delete:hover {
+                color: #cc0000;
+                font-weight: bold;
             }
 
             #value {
@@ -113,7 +122,10 @@
                     <div id='count' x-text='$store.results.keys.length'></div>
 
                     <template x-for='key in $store.results.keys'>
-                        <div class='key' x-text='key.name' x-on:click='selectKey(key.name)'></div>
+                        <div class='key'>
+                            <span class='delete' x-on:click='deleteRecord(key.name)'>DEL</span>
+                            <span x-text='key.name' x-on:click='selectKey(key.name)'></span>
+                        </div>
                     </template>
                 </div>
             </div>
@@ -174,6 +186,18 @@
             .then(res  => res.json())
             .then(data => {
                 console.log(data)
+                Alpine.store('results').updateValue(data)
+            })
+        }
+
+        function deleteRecord(key) {
+            console.log('Deleting record')
+            
+            fetch('http://localhost:8000/delete?key=' + key)
+            .then(res  => res.json())
+            .then(data => {
+                console.log(data)
+                Alpine.store('results').updateKey(key)
                 Alpine.store('results').updateValue(data)
             })
         }

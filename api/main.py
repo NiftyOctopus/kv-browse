@@ -27,7 +27,7 @@ urls = {
     'namespace': ''.join([
         config['endpoint'],
         'accounts/' + config['account'],
-        '/storage/kv/namespaces/' + config['namespace']
+        '/storage/kv/namespaces/' + config['namespace'][config['namespace']['use']]
     ])
 }
 
@@ -61,6 +61,13 @@ async def keys(prefix):
 @app.get('/value')
 async def value(key):
     url = urls['value'] + key
-    print(url)
     req = requests.get(url, headers=headers)
+    return req.json()
+
+
+
+@app.get('/delete')
+async def delete(key):
+    url = urls['value'] + key
+    req = requests.delete(url, headers=headers)
     return req.json()
