@@ -14,7 +14,7 @@ Simple UI to search and browse Cloudflare KV storage
 **Create your config**  
 Copy the config.json.example file to config.json  
 Enter your info  
-Token is refering to Cloudflare [API Tokens](https://developers.cloudflare.com/api/tokens/create/)
+Token is refering to Cloudflare [API Tokens](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/)
 
 ## Usage
 `cd kv-browse/api`  
